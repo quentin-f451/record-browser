@@ -188,6 +188,9 @@ export function setupCapture({ win, outDir, type }) {
           show: false,
           webPreferences: { nodeIntegration: true, contextIsolation: false, backgroundThrottling: false },
         })
+        // Elle a accès à Node : elle ne doit jamais afficher autre chose
+        recorder.webContents.on('will-navigate', event => event.preventDefault())
+        recorder.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
         await recorder.loadFile(path.join(HERE, 'recorder.html'))
       }
       recorder.webContents.send('rec:start', {

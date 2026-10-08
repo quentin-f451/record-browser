@@ -3,3 +3,4 @@ node_modules/
 .video-matrix
 *.part
 .DS_Store
+package-lock.json

@@ -107,9 +107,10 @@ app.whenReady().then(async () => {
       .catch(error => console.error('Émulation tactile impossible :', error))
   }
 
-  // Les liens target="_blank" s'ouvrent dans la même fenêtre
+  // Les liens target="_blank" s'ouvrent dans la même fenêtre (pages web
+  // seulement : un site ne peut pas faire ouvrir un fichier local)
   win.webContents.setWindowOpenHandler(({ url }) => {
-    win.loadURL(url)
+    if (/^https?:/i.test(url)) win.loadURL(url)
     return { action: 'deny' }
   })
 

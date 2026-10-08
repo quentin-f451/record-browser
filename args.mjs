@@ -1,8 +1,8 @@
 // Lecture des arguments, partagée par cli.mjs et rec.mjs
-//   rec tectoniques.com              → plein écran (bureau)
-//   rec -m tectoniques.com           → fenêtre « mobile » 506×900 pt
-//   rec 393x852 tectoniques.com      → fenêtre de la taille indiquée (en points)
-//   rec ./page.html                  → un fichier local marche aussi
+//   rec example.com           → plein écran (bureau)
+//   rec -m example.com        → fenêtre « mobile » 506×900 pt
+//   rec 393x852 example.com   → fenêtre de la taille indiquée (en points)
+//   rec ./page.html           → un fichier local marche aussi
 import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'

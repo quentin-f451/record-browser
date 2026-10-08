@@ -5,8 +5,8 @@ a fixed size, with no browser interface, no macOS recording indicator, and a
 cursor only where you want one.
 
 ```bash
-rec tectoniques.com        # desktop: 1680×1050 pt page → 3360×2100 px captures
-rec -m tectoniques.com     # mobile: 506×900 pt page → 1012×1800 px, touch screen
+rec example.com       # desktop: 1680×1050 pt page → 3360×2100 px captures
+rec -m example.com    # mobile: 506×900 pt page → 1012×1800 px, touch screen
 ```
 
 In the window, **Cmd+S** takes a screenshot and **Cmd+E** starts or stops a
@@ -14,26 +14,44 @@ video. Files land on the Desktop, with a sound and a notification for each one.
 
 ## Install
 
-You need a Mac with a Retina screen, [Node.js](https://nodejs.org) 20 or later,
-[pnpm](https://pnpm.io) and [ffmpeg](https://ffmpeg.org) (for videos).
+You need a Mac with a Retina screen, [Node.js](https://nodejs.org) 22.12 or
+later, and [ffmpeg](https://ffmpeg.org) for videos. Use npm (it comes with
+Node.js) or [pnpm](https://pnpm.io), whichever you have.
 
 ```bash
 brew install ffmpeg
 git clone <this repository> record
 cd record
-pnpm install
-pnpm link --global          # pnpm 11 and later: pnpm add -g .
 ```
 
-`pnpm install` downloads Electron (about 100 MB). It's allowed to run its install
-script by `pnpm-workspace.yaml`; if pnpm still says *Ignored build scripts*,
-run `pnpm approve-builds`, pick electron, then `pnpm rebuild electron`.
+With npm:
 
-If `pnpm link --global` can't find a global bin directory, run `pnpm setup` once
-and open a new terminal. `npm link` works too.
+```bash
+npm install
+npm link                    # makes the rec command available everywhere
+```
+
+With pnpm:
+
+```bash
+pnpm install
+pnpm add -g .               # pnpm 11 and later
+```
+
+With pnpm 10 (`pnpm -v` shows the version), the second command is
+`pnpm link --global` instead.
+
+The first `rec` downloads the Electron app (about 100 MB, once); after that the
+window opens straight away. Electron doesn't use an install script, so neither
+npm nor pnpm asks you to approve one.
 
 The `rec` command points to this folder: after a `git pull` or an edit, the next
-`rec` uses the new code. If you move the folder, run the link step again.
+`rec` uses the new code (run the install step again if `package.json` changed).
+If you move the folder, run the link step again. To remove the command:
+`npm rm -g rec` or `pnpm rm -g rec`.
+
+Electron is pinned to an exact version, because the cursor handling in videos
+follows Chromium's behaviour closely: test a new version before updating it.
 
 ## Use
 
@@ -135,15 +153,27 @@ Page sizes are in `args.mjs` (`DESKTOP`, `MOBILE`).
 | `test-couleurs.html` | Colour test page                                         |
 
 `.cursors/` and `.video-matrix` are caches built on each Mac; they are not in git.
+Neither is npm's `package-lock.json`: `pnpm-lock.yaml` is the reference, and
+`package.json` pins the exact Electron version for both.
 
 ## Troubleshooting
 
-- **`Electron failed to install correctly`**: Electron's install script didn't
-  run. `pnpm approve-builds` (pick electron), then `pnpm rebuild electron`.
+- **`rec: command not found`**: the link step didn't run, or the global bin
+  folder isn't in your `PATH`. With pnpm, run `pnpm setup` once and open a new
+  terminal. With npm, `npm prefix -g` shows the folder; its `bin` must be in
+  your `PATH`.
+- **`npm link` fails with `EACCES`**: Node.js was installed with the nodejs.org
+  installer, whose global folder needs admin rights. Install Node.js with
+  Homebrew instead (`brew install node`), or give npm a folder of your own:
+  `npm config set prefix ~/.npm-global` and add `~/.npm-global/bin` to your
+  `PATH`.
+- **`Electron failed to install correctly`**: the Electron download failed
+  (usually the network). Run `rec` again; if it keeps failing, delete
+  `node_modules` and run the install step again.
 - **`sandbox_extension_issue_file failed …` in the terminal**: harmless Chromium
-  log line (`rec` hides it; you only see it with `pnpm rec`).
+  log line (`rec` hides it; you only see it with `npm run rec` or `pnpm rec`).
 - **Nothing happens on Cmd+S / Cmd+E**: the `rec` window must be in front.
 - **"couleurs non étiquetées" in a notification**: ffmpeg wasn't found;
   `brew install ffmpeg`.
 - **To see errors**, run Electron in the foreground from this folder:
-  `pnpm rec <url>`.
+  `npm run rec -- <url>` or `pnpm rec <url>`.
