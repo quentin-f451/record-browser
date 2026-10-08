@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Capture websites at a fixed size: screenshots and videos without browser UI or recording indicator",
+  "repository": "github:quentin-f451/record-browser",
   "bin": {
     "rec": "cli.mjs"
   },

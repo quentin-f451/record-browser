@@ -1,8 +1,8 @@
-# rec
+# record-browser
 
 A small browser for capturing websites for a portfolio: screenshots and videos at
 a fixed size, with no browser interface, no macOS recording indicator, and a
-cursor only where you want one.
+cursor only where you want one. It runs from the terminal with the `rec` command:
 
 ```bash
 rec example.com       # desktop: 1680×1050 pt page → 3360×2100 px captures
@@ -20,8 +20,8 @@ Node.js) or [pnpm](https://pnpm.io), whichever you have.
 
 ```bash
 brew install ffmpeg
-git clone <this repository> record
-cd record
+git clone https://github.com/quentin-f451/record-browser.git
+cd record-browser
 ```
 
 With npm:
@@ -45,9 +45,10 @@ The first `rec` downloads the Electron app (about 100 MB, once); after that the
 window opens straight away. Electron doesn't use an install script, so neither
 npm nor pnpm asks you to approve one.
 
-The `rec` command points to this folder: after a `git pull` or an edit, the next
-`rec` uses the new code (run the install step again if `package.json` changed).
-If you move the folder, run the link step again. To remove the command:
+The `rec` command points to this folder, so to update, run `git pull` in it: the
+next `rec` uses the new code (run the install step again if `package.json`
+changed). Your own edits to the files apply straight away too. If you move the
+folder, run the link step again. To remove the command:
 `npm rm -g rec` or `pnpm rm -g rec`.
 
 Electron is pinned to an exact version, because the cursor handling in videos
