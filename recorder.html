@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>rec · enregistreur</title>
+<!-- Fenêtre cachée : filme la page (capture d'onglet de Chromium) et
+     envoie la vidéo par morceaux au processus principal, qui l'écrit. -->
+<script>
+const { ipcRenderer } = require('electron')
+
+// H.264 en MP4 en priorité (encodeur matériel sur Mac), WebM en secours
+const TYPES = ['video/mp4;codecs=avc1.640034', 'video/mp4;codecs=avc1', 'video/webm;codecs=vp9', 'video/webm']
+
+let recorder = null
+
+ipcRenderer.on('rec:start', async (_event, { sourceId, width, height, bitrate }) => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        mandatory: {
+          chromeMediaSource: 'tab',
+          chromeMediaSourceId: sourceId,
+          minWidth: width, maxWidth: width,
+          minHeight: height, maxHeight: height,
+          maxFrameRate: 60,
+        },
+      },
+    })
+    const mimeType = TYPES.find(type => MediaRecorder.isTypeSupported(type))
+    recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: bitrate })
+
+    // Les morceaux partent dans l'ordre, même si leur lecture est asynchrone
+    let queue = Promise.resolve()
+    recorder.ondataavailable = event => {
+      if (!event.data.size) return
+      queue = queue.then(async () =>
+        ipcRenderer.send('rec:chunk', new Uint8Array(await event.data.arrayBuffer())))
+    }
+    recorder.onstop = () => {
+      stream.getTracks().forEach(track => track.stop())
+      queue = queue.then(() => ipcRenderer.send('rec:stopped'))
+      recorder = null
+    }
+
+    ipcRenderer.send('rec:started', mimeType)
+    recorder.start(1000) // un morceau par seconde : rien ne s'accumule en mémoire
+  } catch (error) {
+    ipcRenderer.send('rec:error', `${error.name} : ${error.message}`)
+  }
+})
+
+ipcRenderer.on('rec:stop', () => {
+  if (recorder && recorder.state !== 'inactive') recorder.stop()
+})
+</script>

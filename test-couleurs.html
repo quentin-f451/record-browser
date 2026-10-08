@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>Test couleurs</title>
+<!-- Page de test : des aplats de couleurs connues, pour vérifier que les
+     vidéos de rec gardent les mêmes valeurs que les captures d'écran.
+     rec ~/Desktop/record/test-couleurs.html, puis Cmd+S, Cmd+E 3 s, Cmd+E. -->
+<style>
+  html, body { margin: 0; height: 100%; background: #fff; font: 14px/1.2 system-ui, sans-serif; }
+  main { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr 1fr; height: 80vh; }
+  main div { display: flex; align-items: flex-end; padding: 8px; color: #fff; mix-blend-mode: normal; }
+  main div span { background: rgba(0, 0, 0, .25); padding: 2px 4px; }
+  #bar { position: fixed; left: 0; bottom: 6vh; width: 12vw; height: 8vh; background: #111; }
+</style>
+<main>
+  <div style="background: rgb(128, 128, 128)"><span>128 128 128</span></div>
+  <div style="background: rgb(64, 64, 64)"><span>64 64 64</span></div>
+  <div style="background: rgb(200, 60, 30)"><span>200 60 30</span></div>
+  <div style="background: rgb(40, 120, 200)"><span>40 120 200</span></div>
+  <div style="background: rgb(60, 170, 80)"><span>60 170 80</span></div>
+  <div style="background: rgb(230, 200, 60)"><span>230 200 60</span></div>
+  <div style="background: rgb(220, 170, 140)"><span>220 170 140</span></div>
+  <div style="background: rgb(150, 60, 160)"><span>150 60 160</span></div>
+</main>
+<div id="bar"></div>
+<script>
+  // une barre qui bouge, pour que la vidéo ait des images
+  const bar = document.getElementById('bar')
+  let x = 0
+  ;(function step() {
+    x = (x + 0.4) % 88
+    bar.style.left = x + 'vw'
+    requestAnimationFrame(step)
+  })()
+</script>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "rec",
+  "private": true,
+  "description": "Capture websites at a fixed size: screenshots and videos without browser UI or recording indicator",
+  "scripts": {
+    "rec": "electron rec.mjs"
+  },
+  "bin": {
+    "rec": "cli.mjs"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0"
+  }
+}
